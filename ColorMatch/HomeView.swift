@@ -12,6 +12,9 @@ struct HomeView: View {
     let backgroundColor = Color(red: 55/255, green: 55/255, blue: 65/255)
     let matchIconColor = Color(red: 50/255, green: 160/255, blue: 50/255)
     
+    @State private var showingCamera = false // controls camera sheet visibility
+    @State private var capturedImage: UIImage? = nil
+    
     var body: some View {
 
         ZStack {
@@ -26,6 +29,7 @@ struct HomeView: View {
                     
                 Button(action: {
                     print("Match button pressed")
+                    showingCamera = true // shows camera view
                 }) {
                     ZStack {
                         // circular button in center
@@ -51,6 +55,10 @@ struct HomeView: View {
                 .clipShape(Circle())
                 .contentShape(Circle())
                 .padding()
+                .sheet(isPresented: $showingCamera){
+                    CameraView(image: $capturedImage).ignoresSafeArea()
+                    // need to get rid of space at the top of sheet somehow
+                }
                 Button(action: {
                     print("Upload button pressed")
                 }) {
