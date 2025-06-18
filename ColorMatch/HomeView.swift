@@ -14,10 +14,14 @@ struct HomeView: View {
     let backgroundColor = Color(red: 55/255, green: 55/255, blue: 65/255)
     let matchIconColor = Color(red: 50/255, green: 160/255, blue: 50/255)
     
-    @State private var showingCamera = false // controls camera sheet visibility
+    @State private var showingCamera = false  // controls camera sheet visibility
+
+
+    @State private var isLaunchingCamera = false // controls loading camera sheet
     @State private var capturedImage: UIImage? = nil // holds captured photo
     @State private var selectedItem: PhotosPickerItem? // holds selected photo item
     @State private var selectedImage: UIImage? // holds loaded image
+
     
     var body: some View {
 
@@ -30,9 +34,10 @@ struct HomeView: View {
                     .monospaced()
                     .font(.largeTitle)
                     .foregroundColor(Color.white)
-                    
+                
                 Button(action: {
                     print("Match button pressed")
+                    isLaunchingCamera = true
                     showingCamera = true // shows camera view
                 }) {
                     ZStack {
@@ -61,8 +66,20 @@ struct HomeView: View {
                 .padding()
                 .fullScreenCover(isPresented: $showingCamera){ //covers entire screen vs .sheet leaving gap at top
                     CameraView(image: $capturedImage).ignoresSafeArea()
-
+                    
                 }
+                .overlay(
+                    Group {
+                        if isLaunchingCamera {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(1.5)
+                                .frame(width: 50, height: 50)
+                                .background(Color.black.opacity(0.4))
+                                .clipShape(Circle())
+                        }
+                    })
+                    
                 // photo picker button
                 PhotosPicker(selection: $selectedItem, // bind to the selected item
                              matching: .images, // show images only
@@ -92,6 +109,11 @@ struct HomeView: View {
                 
             }
             .padding()
+            .onChange(of: showingCamera) { newValue in
+                if !newValue {
+                    isLaunchingCamera = false
+                }
+            }
         }
     }
 }
