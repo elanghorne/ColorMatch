@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import PhotosUI
+
 
 struct HomeView: View {
     
@@ -13,7 +15,9 @@ struct HomeView: View {
     let matchIconColor = Color(red: 50/255, green: 160/255, blue: 50/255)
     
     @State private var showingCamera = false // controls camera sheet visibility
-    @State private var capturedImage: UIImage? = nil
+    @State private var capturedImage: UIImage? = nil // holds captured photo
+    @State private var selectedItem: PhotosPickerItem? // holds selected photo item
+    @State private var selectedImage: UIImage? // holds loaded image
     
     var body: some View {
 
@@ -55,15 +59,18 @@ struct HomeView: View {
                 .clipShape(Circle())
                 .contentShape(Circle())
                 .padding()
-                .sheet(isPresented: $showingCamera){
+                .fullScreenCover(isPresented: $showingCamera){ //covers entire screen vs .sheet leaving gap at top
                     CameraView(image: $capturedImage).ignoresSafeArea()
-                    // need to get rid of space at the top of sheet somehow
+
                 }
-                Button(action: {
-                    print("Upload button pressed")
-                }) {
-                    Text("Upload photo")
+                // photo picker button
+                PhotosPicker(selection: $selectedItem, // bind to the selected item
+                             matching: .images, // show images only
+                             photoLibrary: .shared()
+                ) {
+                    Text("Select Photo")
                 }
+                
                 Spacer()
                 HStack {
                     Button(action: {
