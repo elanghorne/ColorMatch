@@ -27,7 +27,6 @@ struct HomeView: View {
             }
         }
     }
-
     
     var header: some View {
         Text("MATCH")
@@ -126,7 +125,6 @@ struct HomeView: View {
                     Spacer()
                     header
                     matchButton
-
                     // photo picker button
                     PhotosPicker(selection: $selectedItem, // bind to the selected item
                                  matching: .images, // show images only
@@ -137,7 +135,6 @@ struct HomeView: View {
                     .onChange(of: selectedItem, perform: handlePhotoPickerChange)
                     Spacer()
                     footerButtons
-                    
                 }
                 .padding()
                 .onChange(of: showingCamera) { newValue in
@@ -145,7 +142,6 @@ struct HomeView: View {
                         isLaunchingCamera = false
                     }
                 }
-
                 NavigationLink(destination: analysisDestination, isActive: $navigateToAnalysis) {
                             EmptyView()
                         }
@@ -160,9 +156,16 @@ struct HomeView: View {
                     navigateToAnalysis = true
                 }
             }
+            .onChange(of: navigateToAnalysis) { newValue in
+                if newValue == false {
+                    selectedImage = nil
+                    capturedImage = nil
+                }
+            }
         }
     }
 }
+
 
 #Preview {
     HomeView()
