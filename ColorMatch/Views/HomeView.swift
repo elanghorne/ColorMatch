@@ -18,64 +18,115 @@ struct HomeView: View {
     @State private var selectedImage: UIImage? // holds loaded image
     @State private var capturedImage: UIImage? = nil // holds captured photo
     
-    var body: some View {
+    func handlePhotoPickerChange(_ newItem: PhotosPickerItem?) {
+        guard let newItem = newItem else { return }
+        Task {
+            if let data = try? await newItem.loadTransferable(type: Data.self),
+               let image = UIImage(data: data) {
+                selectedImage = image
+            }
+        }
+    }
 
-        ZStack {
-            AppColor.background.ignoresSafeArea()
-            NavigationStack {
-                VStack {
-                    Spacer()
-                    Text("MATCH")
-                        .bold()
-                        .monospaced()
-                        .font(.largeTitle)
-                        .foregroundColor(Color.white)
-                    
-                    Button(action: {
-                        print("Match button pressed")
-                        isLaunchingCamera = true
-                        showingCamera = true // shows camera view
-                    }) {
-                        ZStack {
-                            // circular button in center
-                            Circle()
-                                .frame(width: 250, height: 250)
-                                .foregroundColor(AppColor.matchIcon)
-                                .clipShape(Circle())
-                                .contentShape(Circle())
-                            Circle()
-                                .stroke(AppColor.background, lineWidth: 7)
-                                .frame(width: 220, height: 220)
-                                .clipShape(Circle())
-                                .contentShape(Circle())
-                                .foregroundColor(AppColor.matchIcon)
-                            Image(systemName: "camera")
-                                .font(.system(size: 75))
-                                .foregroundColor(AppColor.background)
-                        }
-                    }
-                    // trims button shape from square to circle
+    
+    var header: some View {
+        Text("MATCH")
+            .bold()
+            .monospaced()
+            .font(.largeTitle)
+            .foregroundColor(Color.white)
+    }
+    
+    var matchButton: some View {
+        Button(action: {
+            print("Match button pressed")
+            isLaunchingCamera = true
+            showingCamera = true // shows camera view
+        }) {
+            ZStack {
+                // circular button in center
+                Circle()
                     .frame(width: 250, height: 250)
-                    .background(Color.red.opacity(0.3))
+                    .foregroundColor(AppColor.matchIcon)
                     .clipShape(Circle())
                     .contentShape(Circle())
-                    .padding()
-                    .fullScreenCover(isPresented: $showingCamera){ //covers entire screen vs .sheet leaving gap at top
-                        CameraView(image: $capturedImage).ignoresSafeArea()
-                        
-                    }
-                    .overlay(
-                        Group {
-                            if isLaunchingCamera {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                    .scaleEffect(1.5)
-                                    .frame(width: 50, height: 50)
-                                    .background(Color.black.opacity(0.4))
-                                    .clipShape(Circle())
-                            }
-                        })
-                    
+                Circle()
+                    .stroke(AppColor.background, lineWidth: 7)
+                    .frame(width: 220, height: 220)
+                    .clipShape(Circle())
+                    .contentShape(Circle())
+                    .foregroundColor(AppColor.matchIcon)
+                Image(systemName: "camera")
+                    .font(.system(size: 75))
+                    .foregroundColor(AppColor.background)
+            }
+        }
+        // trims button shape from square to circle
+        .frame(width: 250, height: 250)
+        .background(Color.red.opacity(0.3))
+        .clipShape(Circle())
+        .contentShape(Circle())
+        .padding()
+        .fullScreenCover(isPresented: $showingCamera){ //covers entire screen vs .sheet leaving gap at top
+            CameraView(image: $capturedImage).ignoresSafeArea()
+            
+        }
+        .overlay(
+            Group {
+                if isLaunchingCamera {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.5)
+                        .frame(width: 50, height: 50)
+                        .background(Color.black.opacity(0.4))
+                        .clipShape(Circle())
+                }
+            })
+        
+    }
+    
+    var footerButtons: some View {
+        HStack {
+            Button(action: {
+                print("Info button pressed")
+            }) {
+                Image(systemName: "info.circle")
+                    .font(.system(size: 25))
+                //.foregroundColor(Color.white)
+            }
+            Spacer()
+            Button(action: {
+                print("Settings button pressed")
+            }) {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 25))
+                //.foregroundColor(Color.white)
+            }
+        }
+    }
+    
+   @ViewBuilder var analysisDestination: some View {
+            if capturedImage != nil {
+             AnalysisView(image: $capturedImage)
+         } else if selectedImage != nil {
+             AnalysisView(image: $selectedImage)
+         } else {
+             Text("Error: No image to analyze.")
+         }
+         
+    }
+
+    
+    var body: some View {
+
+        NavigationStack {
+            ZStack {
+                AppColor.background.ignoresSafeArea()
+                VStack {
+                    Spacer()
+                    header
+                    matchButton
+
                     // photo picker button
                     PhotosPicker(selection: $selectedItem, // bind to the selected item
                                  matching: .images, // show images only
@@ -83,25 +134,9 @@ struct HomeView: View {
                     ) {
                         Text("Select Photo")
                     }
-                    
+                    .onChange(of: selectedItem, perform: handlePhotoPickerChange)
                     Spacer()
-                    HStack {
-                        Button(action: {
-                            print("Info button pressed")
-                        }) {
-                            Image(systemName: "info.circle")
-                                .font(.system(size: 25))
-                            //.foregroundColor(Color.white)
-                        }
-                        Spacer()
-                        Button(action: {
-                            print("Settings button pressed")
-                        }) {
-                            Image(systemName: "gearshape")
-                                .font(.system(size: 25))
-                            //.foregroundColor(Color.white)
-                        }
-                    }
+                    footerButtons
                     
                 }
                 .padding()
@@ -111,28 +146,20 @@ struct HomeView: View {
                     }
                 }
 
-                NavigationLink(
-                    destination:
-                       Group {
-                           if capturedImage != nil {
-                            AnalysisView(image: $capturedImage)
-                        } else if selectedImage != nil {
-                            AnalysisView(image: $selectedImage)
-                        } else {
-                            Text("Error: No image to analyze.")
-                        }
-                        }, isActive: $navigateToAnalysis) {
+                NavigationLink(destination: analysisDestination, isActive: $navigateToAnalysis) {
                             EmptyView()
                         }
             }
-            .onChange(of: capturedImage) {newValue in
+            .onChange(of: capturedImage) { newValue in
                 if newValue != nil {
                     navigateToAnalysis = true
-                }}
+                }
+            }
             .onChange(of: selectedImage) { newValue in
                 if newValue != nil {
                     navigateToAnalysis = true
-                }}
+                }
+            }
         }
     }
 }
@@ -140,3 +167,4 @@ struct HomeView: View {
 #Preview {
     HomeView()
 }
+
