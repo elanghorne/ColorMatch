@@ -6,17 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		800BAE3C2E0A1481006F1D22 /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800BAE352E0A1481006F1D22 /* AppColor.swift */; };
+		800BAE3D2E0A1481006F1D22 /* AnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800BAE342E0A1481006F1D22 /* AnalysisView.swift */; };
+		800BAE3E2E0A1481006F1D22 /* AnalysisModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800BAE322E0A1481006F1D22 /* AnalysisModel.swift */; };
+		800BAE3F2E0A1481006F1D22 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800BAE372E0A1481006F1D22 /* HomeView.swift */; };
+		800BAE402E0A1481006F1D22 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800BAE362E0A1481006F1D22 /* CameraView.swift */; };
+		800BAE412E0A1481006F1D22 /* ColorMatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800BAE3A2E0A1481006F1D22 /* ColorMatchApp.swift */; };
+		800BAE422E0A1481006F1D22 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 800BAE392E0A1481006F1D22 /* Assets.xcassets */; };
+		8084C06F2E146D2D00A8EB4E /* AnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8084C06E2E146D2D00A8EB4E /* AnalysisViewModel.swift */; };
+		8084C0712E147FE900A8EB4E /* AnalysisEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8084C0702E147FE900A8EB4E /* AnalysisEngine.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		800BAE032E00A761006F1D22 /* ColorMatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ColorMatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		800BAE322E0A1481006F1D22 /* AnalysisModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisModel.swift; sourceTree = "<group>"; };
+		800BAE342E0A1481006F1D22 /* AnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisView.swift; sourceTree = "<group>"; };
+		800BAE352E0A1481006F1D22 /* AppColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColor.swift; sourceTree = "<group>"; };
+		800BAE362E0A1481006F1D22 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		800BAE372E0A1481006F1D22 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		800BAE392E0A1481006F1D22 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		800BAE3A2E0A1481006F1D22 /* ColorMatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMatchApp.swift; sourceTree = "<group>"; };
+		8084C06E2E146D2D00A8EB4E /* AnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisViewModel.swift; sourceTree = "<group>"; };
+		8084C0702E147FE900A8EB4E /* AnalysisEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisEngine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		800BAE052E00A761006F1D22 /* ColorMatch */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ColorMatch;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		800BAE002E00A761006F1D22 /* Frameworks */ = {
@@ -32,7 +45,7 @@
 		800BADFA2E00A761006F1D22 = {
 			isa = PBXGroup;
 			children = (
-				800BAE052E00A761006F1D22 /* ColorMatch */,
+				800BAE3B2E0A1481006F1D22 /* ColorMatch */,
 				800BAE042E00A761006F1D22 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +56,46 @@
 				800BAE032E00A761006F1D22 /* ColorMatch.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		800BAE332E0A1481006F1D22 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				800BAE322E0A1481006F1D22 /* AnalysisModel.swift */,
+				8084C0702E147FE900A8EB4E /* AnalysisEngine.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		800BAE382E0A1481006F1D22 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				800BAE342E0A1481006F1D22 /* AnalysisView.swift */,
+				800BAE362E0A1481006F1D22 /* CameraView.swift */,
+				800BAE352E0A1481006F1D22 /* AppColor.swift */,
+				800BAE372E0A1481006F1D22 /* HomeView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		800BAE3B2E0A1481006F1D22 /* ColorMatch */ = {
+			isa = PBXGroup;
+			children = (
+				8084C06D2E146CF700A8EB4E /* ViewModels */,
+				800BAE332E0A1481006F1D22 /* Models */,
+				800BAE382E0A1481006F1D22 /* Views */,
+				800BAE392E0A1481006F1D22 /* Assets.xcassets */,
+				800BAE3A2E0A1481006F1D22 /* ColorMatchApp.swift */,
+			);
+			path = ColorMatch;
+			sourceTree = "<group>";
+		};
+		8084C06D2E146CF700A8EB4E /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				8084C06E2E146D2D00A8EB4E /* AnalysisViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -59,9 +112,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				800BAE052E00A761006F1D22 /* ColorMatch */,
 			);
 			name = ColorMatch;
 			packageProductDependencies = (
@@ -109,6 +159,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				800BAE422E0A1481006F1D22 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +170,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8084C06F2E146D2D00A8EB4E /* AnalysisViewModel.swift in Sources */,
+				8084C0712E147FE900A8EB4E /* AnalysisEngine.swift in Sources */,
+				800BAE3C2E0A1481006F1D22 /* AppColor.swift in Sources */,
+				800BAE3D2E0A1481006F1D22 /* AnalysisView.swift in Sources */,
+				800BAE3E2E0A1481006F1D22 /* AnalysisModel.swift in Sources */,
+				800BAE3F2E0A1481006F1D22 /* HomeView.swift in Sources */,
+				800BAE402E0A1481006F1D22 /* CameraView.swift in Sources */,
+				800BAE412E0A1481006F1D22 /* ColorMatchApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,6 +325,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				"OTHER_SWIFT_FLAGS[sdk=*]" = "-Xfrontend -warn-long-expression-type-checking=100";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.eric-langhorne.ColorMatch";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

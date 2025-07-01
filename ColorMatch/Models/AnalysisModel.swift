@@ -9,3 +9,6 @@ import Foundation
 import Vision
 
 
+struct OutfitAnalysisResult{
+    
+}
