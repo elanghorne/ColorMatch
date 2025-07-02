@@ -10,5 +10,5 @@ import Vision
 
 
 struct OutfitAnalysisResult{
-    
+    let message = "Analyzed!"
 }

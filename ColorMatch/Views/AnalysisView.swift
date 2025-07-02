@@ -10,35 +10,46 @@ import PhotosUI
 
 struct AnalysisView: View {
     @Binding var image: UIImage?
-
+    @StateObject var viewModel = AnalysisViewModel()
     
     var body: some View {
         ZStack {
             AppColor.background.ignoresSafeArea()
-            VStack {
-                if let image = image {
-                    VStack {
-                        Text("Analyzing Image...")
-                            .font(.largeTitle)
-                            .padding()
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .scaleEffect(1.5)
-                            .frame(width: 50, height: 50)
-                            .clipShape(Circle())
+                VStack {
+                    if let image = image {
+
+                            if !viewModel.analysisComplete {
+                                VStack {
+                                    Text("Analyzing Image...")
+                                        .font(.largeTitle)
+                                        .padding()
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .scaleEffect(1.5)
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(Circle())
+                                }
+                            } else {
+                                Text(OutfitAnalysisResult().message)
+                                    .font(.largeTitle)
+                                    .padding()
+                            }
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 400)
+                            .cornerRadius(20)
+                            .onAppear {
+                                Task {
+                                    await viewModel.analyze(image: image)
+                                }
+                            }
+                        
                     }
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 400)
-                        .cornerRadius(20)
-                    
                 }
             }
         }
     }
-}
-
 #Preview {
     AnalysisView(image: .constant(nil))
 }

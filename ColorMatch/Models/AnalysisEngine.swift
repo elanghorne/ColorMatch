@@ -8,6 +8,9 @@
 import Foundation
 import PhotosUI
 
-struct AnalysisEngine{
-    
+struct AnalysisEngine {
+    func runAnalysis(on image: UIImage) async -> OutfitAnalysisResult {
+        try? await Task.sleep(nanoseconds: 1_000_000_000 * 5)
+        return OutfitAnalysisResult()
+    }
 }
