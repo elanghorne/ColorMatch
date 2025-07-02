@@ -17,23 +17,22 @@ struct AnalysisView: View {
             AppColor.background.ignoresSafeArea()
                 VStack {
                     if let image = image {
-
-                            if !viewModel.analysisComplete {
-                                VStack {
-                                    Text("Analyzing Image...")
-                                        .font(.largeTitle)
-                                        .padding()
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                        .scaleEffect(1.5)
-                                        .frame(width: 50, height: 50)
-                                        .clipShape(Circle())
-                                }
-                            } else {
-                                Text(OutfitAnalysisResult().message)
+                        if !viewModel.analysisComplete {
+                            VStack {
+                                Text("Analyzing Image...")
                                     .font(.largeTitle)
                                     .padding()
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(1.5)
+                                    .frame(width: 50, height: 50)
+                                    .clipShape(Circle())
                             }
+                        } else {
+                            Text(OutfitAnalysisResult().message)
+                                .font(.largeTitle)
+                                .padding()
+                        }
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFit()
@@ -44,12 +43,12 @@ struct AnalysisView: View {
                                     await viewModel.analyze(image: image)
                                 }
                             }
-                        
                     }
-                }
             }
         }
     }
+}
+
 #Preview {
     AnalysisView(image: .constant(nil))
 }

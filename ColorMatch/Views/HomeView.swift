@@ -28,7 +28,6 @@ struct HomeView: View {
         }
     }
     
-    
    @ViewBuilder var analysisDestination: some View {
             if capturedImage != nil {
              AnalysisView(image: $capturedImage)
@@ -37,12 +36,9 @@ struct HomeView: View {
          } else {
              Text("Error: No image to analyze.")
          }
-         
     }
-
     
     var body: some View {
-
         NavigationStack {
             ZStack {
                 AppColor.background.ignoresSafeArea()
@@ -84,7 +80,6 @@ struct HomeView: View {
                     .padding()
                     .fullScreenCover(isPresented: $showingCamera){ //covers entire screen vs .sheet leaving gap at top
                         CameraView(image: $capturedImage).ignoresSafeArea()
-                        
                     }
                     .overlay(
                         Group {
@@ -104,7 +99,9 @@ struct HomeView: View {
                     ) {
                         Text("Select Photo")
                     }
-                    .onChange(of: selectedItem, perform: handlePhotoPickerChange)
+                    .onChange(of: selectedItem) { _, newValue in
+                        handlePhotoPickerChange(newValue)
+                    }
                     Spacer()
                     HStack {
                         Button(action: {
@@ -125,26 +122,26 @@ struct HomeView: View {
                     }
                 }
                 .padding()
-                .onChange(of: showingCamera) { newValue in
+                .onChange(of: showingCamera) { oldValue, newValue in
                     if !newValue {
                         isLaunchingCamera = false
                     }
                 }
-                NavigationLink(destination: analysisDestination, isActive: $navigateToAnalysis) {
-                            EmptyView()
-                        }
+                .navigationDestination(isPresented: $navigateToAnalysis) {
+                    analysisDestination
+                }
             }
-            .onChange(of: capturedImage) { newValue in
+            .onChange(of: capturedImage) { oldValue, newValue in
                 if newValue != nil {
                     navigateToAnalysis = true
                 }
             }
-            .onChange(of: selectedImage) { newValue in
+            .onChange(of: selectedImage) { oldValue, newValue in
                 if newValue != nil {
                     navigateToAnalysis = true
                 }
             }
-            .onChange(of: navigateToAnalysis) { newValue in
+            .onChange(of: navigateToAnalysis) { oldValue, newValue in
                 if newValue == false {
                     selectedImage = nil
                     capturedImage = nil
