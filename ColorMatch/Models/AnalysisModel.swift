@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import Vision
+
 
 
 struct OutfitAnalysisResult{
-    let message = "Analyzed!"
+    let feedbackMessage = "Analyzed!"
 }

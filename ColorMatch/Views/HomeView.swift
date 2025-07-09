@@ -30,16 +30,16 @@ struct HomeView: View {
     
    @ViewBuilder var analysisDestination: some View {
             if capturedImage != nil {
-             AnalysisView(image: $capturedImage)
+             AnalysisView(image: $capturedImage) // pass binding to capturedImage to AnalysisView if an image is there
          } else if selectedImage != nil {
-             AnalysisView(image: $selectedImage)
+             AnalysisView(image: $selectedImage) // pass binding to selectedImage to AnalysisView if an image is there
          } else {
-             Text("Error: No image to analyze.")
+             Text("Error: No image to analyze.") // display error for debugging
          }
     }
     
     var body: some View {
-        NavigationStack {
+        NavigationStack { // allows nagivagation link
             ZStack {
                 AppColor.background.ignoresSafeArea()
                 VStack {
@@ -51,7 +51,7 @@ struct HomeView: View {
                         .foregroundColor(Color.white)
                     Button(action: {
                         print("Match button pressed")
-                        isLaunchingCamera = true
+                        isLaunchingCamera = true // triggers progress view for camera hang
                         showingCamera = true // shows camera view
                     }) {
                         ZStack {
@@ -83,7 +83,7 @@ struct HomeView: View {
                     }
                     .overlay(
                         Group {
-                            if isLaunchingCamera {
+                            if isLaunchingCamera { // progress view for camera delay
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .scaleEffect(1.5)
@@ -124,24 +124,24 @@ struct HomeView: View {
                 .padding()
                 .onChange(of: showingCamera) { oldValue, newValue in
                     if !newValue {
-                        isLaunchingCamera = false
+                        isLaunchingCamera = false // removes progress view when user goes back to HomeView
                     }
                 }
-                .navigationDestination(isPresented: $navigateToAnalysis) {
+                .navigationDestination(isPresented: $navigateToAnalysis) { // triggers when navigateToAnalysis is true
                     analysisDestination
                 }
             }
-            .onChange(of: capturedImage) { oldValue, newValue in
+            .onChange(of: capturedImage) { oldValue, newValue in // if capturedImage changes and the new value is not nil
                 if newValue != nil {
-                    navigateToAnalysis = true
+                    navigateToAnalysis = true // triggers navigation/updates state
                 }
             }
-            .onChange(of: selectedImage) { oldValue, newValue in
+            .onChange(of: selectedImage) { oldValue, newValue in // if selectedImage changes and the new value is not nil
                 if newValue != nil {
-                    navigateToAnalysis = true
+                    navigateToAnalysis = true // triggers navigation/updates state
                 }
             }
-            .onChange(of: navigateToAnalysis) { oldValue, newValue in
+            .onChange(of: navigateToAnalysis) { oldValue, newValue in //
                 if newValue == false {
                     selectedImage = nil
                     capturedImage = nil

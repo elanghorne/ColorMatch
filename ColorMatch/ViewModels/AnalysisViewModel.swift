@@ -8,18 +8,18 @@
 import Foundation
 import PhotosUI
 
-@MainActor
+@MainActor // keeps on main thread, so changes aren't published from background threads
 class AnalysisViewModel: ObservableObject{
-    @Published var isAnalyzing = false
+   // @Published var isAnalyzing = false
     @Published var analysisResult: OutfitAnalysisResult?
     @Published var analysisComplete = false
     
     func analyze(image: UIImage) async{
-        self.isAnalyzing = true
-        let result = await AnalysisEngine().runAnalysis(on: image)
-        self.analysisResult = result
-        self.isAnalyzing = false
-        self.analysisComplete = true
+    //    self.isAnalyzing = true
+        let result = await AnalysisEngine().runAnalysis(on: image) // runs analysis on image and stores return value in result
+        self.analysisResult = result // publishes result
+     //   self.isAnalyzing = false
+        self.analysisComplete = true // marks analysis as complete
     }
 }
     
