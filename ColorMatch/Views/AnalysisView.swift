@@ -29,10 +29,11 @@ struct AnalysisView: View {
                                     .clipShape(Circle())
                             }
                         } else { //if analysis is already complete
-                            Text(OutfitAnalysisResult().feedbackMessage) // display feedback message
-                                .font(.largeTitle)
-                                .padding()
-
+                            if let result = viewModel.analysisResult {
+                                Text(result.feedbackMessage) // display feedback message
+                                    .font(.largeTitle)
+                                    .padding()
+                            }
                         }
                         Image(uiImage: image)
                             .resizable()

@@ -11,35 +11,70 @@ import Vision
 
 struct AnalysisEngine {
     func runAnalysis(on image: UIImage) async -> OutfitAnalysisResult {
-        let analysisResult = OutfitAnalysisResult()
+        var analysisResult = OutfitAnalysisResult() // create instance of OutfitAnalysisResult structure
         
+        guard let cgImage = image.cgImage else { // convert UIImage to CGImage for analysis
+            analysisResult.feedbackMessage = AnalysisError.imageConversionFailed.localizedDescription
+            return analysisResult
+        }
+        do {
+            let boundingBox = try await self.detectBody(in: cgImage)
+            print("Bounding box detected: \(boundingBox)")
+            analysisResult.feedbackMessage = "Human detected!"
+        } catch let error as AnalysisError {
+            analysisResult.feedbackMessage = error.localizedDescription
+            return analysisResult
+        } catch {
+            analysisResult.feedbackMessage = "An unknown error occurred."
+            return analysisResult
+        }
         return analysisResult
     }
     
-    private func convertImage(from image: UIImage) -> CGImage{
-        let cgImage = image.cgImage!
-        return cgImage
-    }
-    private func detectBody(in image: CGImage) -> CGRect{
+
+    private func detectBody(in image: CGImage) async throws -> CGRect{
+        let bodyDetectionRequest = VNDetectHumanRectanglesRequest()
         let requestHandler = VNImageRequestHandler(cgImage: image, options: [:])
-        let detectionRequest = VNDetectHumanRectanglesRequest { request, error in
-            if let error = error {
-                analysisResult.feedbackMessage = "Error detecting human rectangles: \(error.localizedDescription)"
-                return
-            }
-            guard let observations = request.results as? [VNHumanObservation] else {
-                analysisResult.feedbackMessage = "No person detected. Please try again."
-                return
-            }
-            for observation in observations {
-                let boundingBox = observation.boundingBox
-                print("Bounding box: \(boundingBox)")
-            }
+        
+        try requestHandler.perform([bodyDetectionRequest])
+        guard let result = bodyDetectionRequest.results, let observation = result as? [VNHumanObservation], !observation.isEmpty else {
+            print("No human detected. Please try again.")
+            throw AnalysisError.noHumanFound
         }
-        do {
-            try requestHandler.perform([detectionRequest])
-        } catch {
-            analysisResult.feedbackMessage = "Error performing detection request: \(error.localizedDescription)"
+        if observation.count > 1 {
+            print("Multiple people detected. Try again with only 1 person.")
+            throw AnalysisError.multipleHumansFound
         }
+        
+        let boundingBox = observation[0].boundingBox
+        return boundingBox
     }
 }
+
+
+/* async + closure version
+ let bodyDetectionRequest = VNDetectHumanRectanglesRequest { request, error in
+     if let error = error {
+         print("Error detecting human rectangles: \(error.localizedDescription)")
+         return
+     }
+     guard let observation = request.results as? [VNHumanObservation] else {
+         print("No human detected. Please try again.")
+         return
+     }
+     if observation.count > 1 {
+         print("Multiple people detected. Try again with only 1 person.")
+     }
+     let boundingBox = observation[0].boundingBox
+     print("Bounding box: \(boundingBox)")
+     
+ }
+ 
+ do {
+     try requestHandler.perform([bodyDetectionRequest])
+     return boundingBox
+ } catch {
+     print("Failed to perform detection request: \(error.localizedDescription)")
+     return
+ }
+ */
