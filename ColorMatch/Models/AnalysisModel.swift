@@ -6,11 +6,12 @@
 //
 
 import Foundation
-
+import PhotosUI
 
 // storage for analysis data and final feedback
 struct OutfitAnalysisResult{
     var feedbackMessage = "Analyzed!"
+    var debugImage: UIImage? = nil //testing
 }
 
 // possible errors throughout analysis
@@ -18,16 +19,24 @@ enum AnalysisError: LocalizedError {
     case noHumanFound
     case multipleHumansFound
     case imageConversionFailed
+    case unknown
+    case bodyDetectionRequest
+    case failedCrop
     
     var errorDescription: String? {
         switch self {
             case .noHumanFound:
-            return "No human found in image."
-        case .multipleHumansFound:
-            return "Multiple humans found in image."
-        case .imageConversionFailed:
-            return "Failed to convert image to CGImage."
+                return "No human found in image. Please try again."
+            case .multipleHumansFound:
+                return "Multiple humans found in image. Please try again with only 1 person."
+            case .imageConversionFailed:
+                return "Failed to convert image to CGImage."
+            case .unknown:
+                return "Unknown error occurred."
+            case .bodyDetectionRequest:
+                return "Error performing body detection request."
+        case .failedCrop:
+            return "Failed to crop image."
         }
     }
-
 }

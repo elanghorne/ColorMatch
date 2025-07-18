@@ -33,6 +33,15 @@ struct AnalysisView: View {
                                 Text(result.feedbackMessage) // display feedback message
                                     .font(.largeTitle)
                                     .padding()
+                                if let debugImage = result.debugImage {
+                                    Image(uiImage: debugImage)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 200)
+                                        .border(Color.green, width: 2)
+                                        .padding()
+
+                                }
                             }
                         }
                         Image(uiImage: image)
