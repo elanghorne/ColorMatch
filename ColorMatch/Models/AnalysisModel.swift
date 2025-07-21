@@ -12,6 +12,7 @@ import PhotosUI
 struct OutfitAnalysisResult{
     var feedbackMessage = "Analyzed!"
     var debugImage: UIImage? = nil //testing
+    var pixelBuffer: [UInt8]? = nil
 }
 
 // possible errors throughout analysis

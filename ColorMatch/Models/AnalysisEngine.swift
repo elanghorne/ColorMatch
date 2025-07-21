@@ -12,10 +12,10 @@ import Vision
 struct AnalysisEngine {
     func runAnalysis(on image: UIImage) async -> OutfitAnalysisResult {
         var analysisResult = OutfitAnalysisResult() // create instance of OutfitAnalysisResult structure
-        let bodyBox: CGRect
-        let faceBox: CGRect?
-        let croppedBodyImage: CGImage
-        let croppedFaceImage: CGImage
+        var bodyBox: CGRect
+        // var faceBox: CGRect?
+        var croppedBodyImage: CGImage
+        var croppedFaceImage: CGImage?
        // print("Initial orientation: \(image.imageOrientation)") // debug
         let orientedImage = image.normalized()
         guard let cgImage = orientedImage.cgImage else { // convert UIImage to CGImage for analysis
@@ -49,7 +49,7 @@ struct AnalysisEngine {
             if let faceBox = try await self.detectFace(in: croppedBodyImage){
                 print("Face bounding box detected: \(faceBox)")
                 croppedFaceImage = try self.cropFace(faceBox, outOf: croppedBodyImage)
-                analysisResult.debugImage = UIImage(cgImage: croppedFaceImage)
+                //analysisResult.debugImage = UIImage(cgImage: croppedFaceImage)
             }
                
             
@@ -57,7 +57,14 @@ struct AnalysisEngine {
             analysisResult.feedbackMessage = error.localizedDescription
             return analysisResult
         }
-
+        if let cropped = croppedFaceImage{
+            analysisResult.pixelBuffer = self.getPixelData(from: cropped)
+        } else {
+            analysisResult.pixelBuffer = self.getPixelData(from: croppedBodyImage)
+        }
+        if let buffer = analysisResult.pixelBuffer {
+            print(Array(buffer[0..<400]))
+        }
         
         return analysisResult
     }
@@ -135,6 +142,34 @@ struct AnalysisEngine {
             throw AnalysisError.failedCrop
         }
         return croppedImage
+    }
+    
+    
+    private func getPixelData(from image: CGImage) -> [UInt8]? {
+        let width = image.width
+        let height = image.height
+        let bytesPerPixel = 4
+        let bytesPerRow = bytesPerPixel * width
+        let totalBytes = height * bytesPerRow
+        
+        var pixelData = [UInt8](repeating: 0, count: totalBytes)
+        
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let context = CGContext(
+                data: &pixelData,
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bytesPerRow: bytesPerRow,
+                space: colorSpace,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            ) else {
+                return nil
+        }
+        
+        let rect = CGRect(x: 0, y: 0, width: width, height: height)
+        context.draw(image, in: rect)
+        return pixelData
     }
 }
 
