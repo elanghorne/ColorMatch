@@ -44,3 +44,9 @@ enum AnalysisError: LocalizedError {
         }
     }
 }
+
+struct ColorBucket {
+    let label: String
+    let shade: String
+    let count: Int
+}
