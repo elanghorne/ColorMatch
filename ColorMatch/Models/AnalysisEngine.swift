@@ -11,6 +11,7 @@ import Vision
 
 struct AnalysisEngine {
     func runAnalysis(on image: UIImage) async -> OutfitAnalysisResult {
+        var buckets: [ColorBucket] = []
         var analysisResult = OutfitAnalysisResult() // create instance of OutfitAnalysisResult structure
         var bodyBox: CGRect
         // var faceBox: CGRect?
@@ -67,20 +68,20 @@ struct AnalysisEngine {
         if let buffer = analysisResult.pixelBuffer { // unwrap pixel buffer into local assignment
             print("Original image buffer:", Array(buffer[0..<400])) // testing
             
-            for i in stride(from: 0, to: buffer.count - 3, by: 4){
+            for i in stride(from: 0, to: buffer.count, by: 4){
                 let r = buffer[i]
                 let g = buffer[i+1]
                 let b = buffer[i+2]
                 
-                let hsv = convertRGBtoHSV(r,g,b)
-                // assignToBucket(pixel: hsv)
+                var hsv = convertRGBtoHSV(r,g,b) // 3 element tuple of a single pixel's hsv values
+                assignToBucket(pixel: &hsv, buckets: &buckets)
                 hsvArray.append(hsv.0)
                 hsvArray.append(hsv.1)
                 hsvArray.append(hsv.2)
             }
             print("HSV array:", Array(hsvArray[0..<400]))
             var testingRGBAarray: [UInt8] = []
-            for i in stride(from: 0, to: hsvArray.count - 2, by: 3){
+            for i in stride(from: 0, to: hsvArray.count, by: 3){
                 let h = hsvArray[i]
                 let s = hsvArray[i+1]
                 let v = hsvArray[i+2]
@@ -283,6 +284,16 @@ struct AnalysisEngine {
         return (h: Int(hue), s: Int(saturation * 100), v: Int(value * 100))
     }
     
+    /*
+     * convertHSVtoRGBA
+     *
+     * converts HSV color values into RGBA representation (normalized 0–255)
+     *
+     * input: Int _h_, _s_, _v_ (hue in degrees, saturation/value as percentages)
+     * output: (r: UInt8, g: UInt8, b: UInt8, a: UInt8) tuple representing final color in RGBA format
+     *
+     * note: assumes output alpha is always 255 (fully opaque)
+     */
     private func convertHSVtoRGBA(_ h: Int, _ s: Int, _ v: Int) -> (r: UInt8, g: UInt8, b: UInt8, a: UInt8){
         let s = Double(s) / 100.0
         let v = Double(v) / 100.0
@@ -340,7 +351,7 @@ struct AnalysisEngine {
                             bitsPerPixel: 32,
                             bytesPerRow: bytesPerRow,
                             space: colorSpace,
-                            bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue),
+                            bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
                             provider: dataProvider!,
                             decode: nil,
                             shouldInterpolate: false,
@@ -349,7 +360,69 @@ struct AnalysisEngine {
         return newImage
     }
     
-    private func assignToBucket(pixel: (h: Int, s: Int, v: Int)) {
+    private func getBucketLabel(from h: Int, and s: Int) -> String {
+        if s <= 10 {
+            return "Neutral"
+        } else {
+            switch h {
+                
+            case 0..<30:
+                return "Red"
+            case 30..<60:
+                return "Orange"
+            case 60..<90:
+                return "Yellow"
+            case 90..<120:
+                return "Yellow-green"
+            case 120..<150:
+                return "Green"
+            case 150..<180:
+                return "Cyan-green"
+            case 180..<210:
+                return "Cyan"
+            case 210..<240:
+                return "Blue"
+            case 240..<270:
+                return "Indigo"
+            case 270..<300:
+                return "Violet"
+            case 300..<330:
+                return "Magenta"
+            default:
+                return "Red-magenta"
+            }
+        }
+
+    }
+    
+    private func getShadeLevel(from v: Int) -> ShadeLevel {
+        switch v {
+            
+        case 20..<40:
+            return .dark
+        case 40..<70:
+            return .medium
+        case 70..<101:
+            return .light
+        default:
+            return .neutral
+        }
+    }
+    
+
+    private func assignToBucket(pixel: inout (h: Int, s: Int, v: Int), buckets: inout [ColorBucket]){
+        let label = getBucketLabel(from: pixel.h, and: pixel.s)
+        let shade = getShadeLevel(from: pixel.v)
+        
+        if label == "Neutral" || shade == .neutral {
+            pixel.v = 0 // black out pixels found neutral
+        }
+        
+        if let i = buckets.firstIndex(where: {$0.label == label && $0.shade == shade} ) {
+            buckets[i].count += 1
+        } else {
+            buckets.append(ColorBucket(label: label, shade: shade, count: 1))
+        }
         
     }
 }

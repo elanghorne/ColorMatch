@@ -45,8 +45,15 @@ enum AnalysisError: LocalizedError {
     }
 }
 
+enum ShadeLevel {
+    case light
+    case medium
+    case dark
+    case neutral
+}
+
 struct ColorBucket {
     let label: String
-    let shade: String
-    let count: Int
+    let shade: ShadeLevel
+    var count: Int
 }

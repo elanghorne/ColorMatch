@@ -19,7 +19,7 @@ class AnalysisViewModel: ObservableObject{
         let result = await AnalysisEngine().runAnalysis(on: image) // runs analysis on image and stores return value in result
         self.analysisResult = result // publishes result
      //   self.isAnalyzing = false
-        self.analysisComplete = true // marks analysis as complete
+        self.analysisComplete = true // marks analysis is complete
     }
 }
     
