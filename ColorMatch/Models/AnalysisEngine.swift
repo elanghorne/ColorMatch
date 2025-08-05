@@ -11,6 +11,7 @@ import Vision
 
 struct AnalysisEngine {
     func runAnalysis(on image: UIImage) async -> OutfitAnalysisResult {
+        var darkBlueArray: [(Int, Int, Int)] = [] // TESTING
         var buckets: [ColorBucket] = []
         var analysisResult = OutfitAnalysisResult() // create instance of OutfitAnalysisResult structure
         var bodyBox: CGRect
@@ -74,12 +75,28 @@ struct AnalysisEngine {
                 let b = buffer[i+2]
                 
                 var hsv = convertRGBtoHSV(r,g,b) // 3 element tuple of a single pixel's hsv values
-                assignToBucket(pixel: &hsv, buckets: &buckets)
+                assignToBucket(pixel: &hsv, buckets: &buckets, testingArray: &darkBlueArray)
                 hsvArray.append(hsv.0)
                 hsvArray.append(hsv.1)
                 hsvArray.append(hsv.2)
             }
+            // calculate percentage of total image for each bucket
+            let totalPixels = buffer.count / 4
+            for i in buckets.indices {
+                buckets[i].percentage = Double(buckets[i].count) / Double(totalPixels) * 100.0
+            }
+            
+            // sort bucket array smallest - largest
+            buckets.sort(by: { $0.count < $1.count } )
+
+            // prints for debugging
             print("HSV array:", Array(hsvArray[0..<400]))
+            print("Buckets:", buckets)
+            print("Number of buckets:", buckets.count)
+            print("Total pixels: \(totalPixels)")
+            print("Blue.dark pixels:", Array(darkBlueArray[0..<3000]))
+            
+            // testing hsv to rgb conversion to confirm accuracy in image
             var testingRGBAarray: [UInt8] = []
             for i in stride(from: 0, to: hsvArray.count, by: 3){
                 let h = hsvArray[i]
@@ -92,8 +109,8 @@ struct AnalysisEngine {
                 testingRGBAarray.append(rgba.2)
                 testingRGBAarray.append(rgba.3)
             }
+            // showing difference between new and original rgba values for debugging
             var diffArray: [Int] = []
-
             for i in 0..<min(buffer.count, testingRGBAarray.count) {
                 let original = Int(buffer[i])
                 let reconstructed = Int(testingRGBAarray[i])
@@ -102,12 +119,13 @@ struct AnalysisEngine {
             }
 
             // print(Array(diffArray[0..<1000]))
+            // create and store altered image in analysisResult for debugging (blackout/color testing)
             if let finalImage = finalImage { // unwrap
                 if let testImage = createImage(from: testingRGBAarray, width: finalImage.width, height: finalImage.height){
                     analysisResult.debugImage = UIImage(cgImage: testImage)
                 }
-                
             }
+            
         }
         return analysisResult
     }
@@ -360,9 +378,11 @@ struct AnalysisEngine {
         return newImage
     }
     
-    private func getBucketLabel(from h: Int, and s: Int) -> String {
-        if s <= 10 {
-            return "Neutral"
+    private func getBucketLabel(from h: Int, and s: Int, and v: Int) -> String {
+        if (s <= 5) || (s <= 15 && v <= 20) || (h >= 0 && h <= 45 && s <= 15) {
+            return "Neutral" // gray
+        } else if h >= 0 && h <= 45 && s > 10 && s <= 70 && v >= 20 && v <= 90 {
+            return "Neutral" // tans/browns
         } else {
             switch h {
                 
@@ -408,23 +428,100 @@ struct AnalysisEngine {
             return .neutral
         }
     }
-    
 
-    private func assignToBucket(pixel: inout (h: Int, s: Int, v: Int), buckets: inout [ColorBucket]){
-        let label = getBucketLabel(from: pixel.h, and: pixel.s)
+
+    private func assignToBucket(pixel: inout (h: Int, s: Int, v: Int), buckets: inout [ColorBucket], testingArray: inout [(Int, Int, Int)]){
+        let label = getBucketLabel(from: pixel.h, and: pixel.s, and: pixel.v)
         let shade = getShadeLevel(from: pixel.v)
-        
-        if label == "Neutral" || shade == .neutral {
-            pixel.v = 0 // black out pixels found neutral
+    
+        if label == "Blue" && shade == .dark {
+            testingArray.append((pixel.h, pixel.s, pixel.v))
         }
-        
+        // this ensures there is only 1 neutral bucket
+        if label == "Neutral" || shade == .neutral {
+            pixel.v = 0
+            if let i = buckets.firstIndex(where: { $0.label == "Neutral" || $0.shade == .neutral } ) {
+                buckets[i].count += 1
+                } else {
+                buckets.append(ColorBucket(label: "Neutral", shade: .neutral, count: 1))
+            }
+            return
+        }
+        // bucket assignment/creation for non-neutrals
         if let i = buckets.firstIndex(where: {$0.label == label && $0.shade == shade} ) {
             buckets[i].count += 1
         } else {
             buckets.append(ColorBucket(label: label, shade: shade, count: 1))
         }
+        // pixel edits for debugging/troubleshooting
+        if label == "Orange" && shade == .light {
+            pixel.h = 250 // blue
+            pixel.s = 100
+            pixel.v = 100
+        } else if label == "Red" && shade == .dark {
+            pixel.h = 0 // red
+            pixel.s = 100
+            pixel.v = 100
+        } else if label == "Red" && shade == .medium {
+            pixel.h = 70 // yellow
+            pixel.s = 100
+            pixel.v = 100
+        }
+    }
+    
+    
+    private func determineHarmony(from buckets: inout [ColorBucket], _ analysisResult: inout OutfitAnalysisResult) {
+        // remove low percentage buckets (noise)
+        for i in stride(from: 0, to: buckets.count - 1, by: 1) {
+            if buckets[i].percentage <= 5 {
+                buckets.remove(at: i)
+            }
+        }
+        if buckets.count == 1 { // 1 dominant color
+            analysisResult.isMatch = true // automatic match
+        } else if buckets.count == 2 { // 2 dominant colors
+            if buckets[0].label == "Neutral" || buckets[1].label == "Neutral" {
+                analysisResult.isMatch = true // auto match if 1 bucket is neutral
+            } else {
+                analysisResult.isMatch = twoBucketAnalysis(on: buckets) // run 2 color harmony analysis
+            }
+        } else if buckets.count == 3 { // 3 dominant colors
+            if buckets[0].label == "Neutral" || buckets[1].label == "Neutral" || buckets[2].label == "Neutral" {
+                removeNeutral(from: &buckets)
+                analysisResult.isMatch = twoBucketAnalysis(on: buckets) // run 2bucket if there's a neutral
+            } else {
+                analysisResult.isMatch = threeBucketAnalysis(on: buckets) // run 3bucket if no neutral
+            }
+        } else if buckets.count == 4 {
+            if buckets[0].label == "Neutral" || buckets[1].label == "Neutral" || buckets[2].label == "Neutral" || buckets[3].label == "Neutral" {
+                removeNeutral(from: &buckets)
+                analysisResult.isMatch = threeBucketAnalysis(on: buckets)
+            } else {
+                analysisResult.isMatch = false
+            }
+        } else {
+            analysisResult.isMatch = false
+        }
         
     }
+    
+    private func removeNeutral(from buckets: inout [ColorBucket]) {
+        for i in stride(from: 0, to: buckets.count - 1, by: 1) {
+            if buckets[i].label == "Neutral"{
+                buckets.remove(at: i)
+            }
+        }
+    }
+    
+    private func twoBucketAnalysis(on buckets: [ColorBucket]) -> Bool {
+        
+    }
+    
+    private func threeBucketAnalysis(on buckets: [ColorBucket]) -> Bool {
+        
+    }
+    
+
 }
 
     
