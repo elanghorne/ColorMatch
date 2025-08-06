@@ -11,7 +11,7 @@ import PhotosUI
 // storage for analysis data and final feedback
 struct OutfitAnalysisResult{
     var feedbackMessage = "Analyzed!"
-    var isMatch? = nil // may end up optional
+    var isMatch: Bool? = nil
     var confidence: Int = 0 // 0-100
     var debugImage: UIImage? = nil //testing
     var pixelBuffer: [UInt8]? = nil
@@ -54,15 +54,25 @@ enum ShadeLevel {
     case neutral
 }
 
-struct ColorBucket {
+struct ColorBucket: CustomStringConvertible {
     let label: String
     let shade: ShadeLevel
     var count: Int
     var percentage: Double = 0.0
+    var pixels: [(h: Int, s: Int, v: Int)] = []
     
+    var description: String {
+        return "Label: \(label), Shade: \(shade), Count: \(count), Percentage: \(String(format: "%.2f", percentage))%"
+    }
     init(label: String, shade: ShadeLevel, count: Int) {
         self.label = label
         self.shade = shade
         self.count = count
+    }
+    init(label: String, shade: ShadeLevel, count: Int, pixels: [(h: Int, s: Int, v: Int)]) {
+        self.label = label
+        self.shade = shade
+        self.count = count
+        self.pixels = pixels
     }
 }
