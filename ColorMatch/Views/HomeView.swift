@@ -19,6 +19,7 @@ struct HomeView: View {
     @State private var capturedImage: UIImage? = nil // holds captured photo
     @State private(set) var isWorn: Bool = true
     
+    
     func handlePhotoPickerChange(_ newItem: PhotosPickerItem?) {
         guard let newItem = newItem else { return }
         Task {
