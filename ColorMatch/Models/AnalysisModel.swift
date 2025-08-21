@@ -52,24 +52,41 @@ enum ShadeLevel {
     case medium
     case dark
     case neutral
+    
+    var value: Int {
+        switch self {
+        case .light:
+            return 1
+        case .medium:
+            return 2
+        case .dark:
+            return 3
+        case .neutral:
+            return 0
+        }
+    }
 }
 
 struct ColorBucket: CustomStringConvertible {
-    let label: String
+    let label: (Int, String)  // label is tuple where .0 is number 1-12 for determining adjacence and .1 is semantic descriptor
     let shade: ShadeLevel
     var count: Int
     var percentage: Double = 0.0
+    var meanHue: Int = 0
+    var hueStdDev: Double = 0.0
+    var meanValue: Int = 0
+    var valueStdDev: Double = 0.0
     var pixels: [(h: Int, s: Int, v: Int)] = []
     
     var description: String {
-        return "Label: \(label), Shade: \(shade), Count: \(count), Percentage: \(String(format: "%.2f", percentage))%"
+        return "Label: \(label), Shade: \(shade), Count: \(count), Percentage: \(String(format: "%.2f", percentage))%, Mean Hue: \(meanHue), Hue StdDev: \(String(format: "%.2f", hueStdDev))"
     }
-    init(label: String, shade: ShadeLevel, count: Int) {
+    init(label: (Int, String), shade: ShadeLevel, count: Int) {
         self.label = label
         self.shade = shade
         self.count = count
     }
-    init(label: String, shade: ShadeLevel, count: Int, pixels: [(h: Int, s: Int, v: Int)]) {
+    init(label: (Int, String), shade: ShadeLevel, count: Int, pixels: [(h: Int, s: Int, v: Int)]) {
         self.label = label
         self.shade = shade
         self.count = count

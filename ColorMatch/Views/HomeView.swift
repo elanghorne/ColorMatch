@@ -17,6 +17,7 @@ struct HomeView: View {
     @State private var selectedItem: PhotosPickerItem? // holds selected photo item
     @State private var selectedImage: UIImage? // holds loaded image
     @State private var capturedImage: UIImage? = nil // holds captured photo
+    @State private(set) var isWorn: Bool = true
     
     func handlePhotoPickerChange(_ newItem: PhotosPickerItem?) {
         guard let newItem = newItem else { return }
@@ -30,9 +31,9 @@ struct HomeView: View {
     
    @ViewBuilder var analysisDestination: some View {
             if capturedImage != nil {
-             AnalysisView(image: $capturedImage) // pass binding to capturedImage to AnalysisView if an image is there
+                AnalysisView(image: $capturedImage, isWorn: isWorn) // pass binding to capturedImage to AnalysisView if an image is there
          } else if selectedImage != nil {
-             AnalysisView(image: $selectedImage) // pass binding to selectedImage to AnalysisView if an image is there
+             AnalysisView(image: $selectedImage, isWorn: isWorn) // pass binding to selectedImage to AnalysisView if an image is there
          } else {
              Text("Error: No image to analyze.") // display error for debugging
          }
@@ -49,11 +50,17 @@ struct HomeView: View {
                         .monospaced()
                         .font(.largeTitle)
                         .foregroundColor(Color.white)
+                    Picker("Select an option", selection: $isWorn) {
+
+                        Text("Outfit worn").tag(true)
+                        Text("Outfit laid-out").tag(false)
+                    }
+                    .tint(.white)
                     Button(action: {
                         print("Match button pressed")
                         isLaunchingCamera = true // triggers progress view for camera hang
                         showingCamera = true // shows camera view
-                    }) {
+                    }){
                         ZStack {
                             // circular button in center
                             Circle()
@@ -106,6 +113,7 @@ struct HomeView: View {
                     HStack {
                         Button(action: {
                             print("Info button pressed")
+                            
                         }) {
                             Image(systemName: "info.circle")
                                 .font(.system(size: 25))

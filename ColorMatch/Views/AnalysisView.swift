@@ -10,7 +10,9 @@ import PhotosUI
 
 struct AnalysisView: View {
     @Binding var image: UIImage? // binding to either selectedImage or capturedImage
+    var isWorn: Bool
     @StateObject var viewModel = AnalysisViewModel()
+
     
     var body: some View {
         ZStack {
@@ -51,7 +53,7 @@ struct AnalysisView: View {
                             .cornerRadius(20)
                             .onAppear { // when image is displayed
                                 Task {
-                                    await viewModel.analyze(image: image) // call to analyze method passing the image
+                                    await viewModel.analyze(image: image, isWorn: isWorn) // call to analyze method passing the image
                                 }
                             }
                     }
@@ -61,5 +63,5 @@ struct AnalysisView: View {
 }
 
 #Preview {
-    AnalysisView(image: .constant(nil))
+    AnalysisView(image: .constant(nil), isWorn: true)
 }
