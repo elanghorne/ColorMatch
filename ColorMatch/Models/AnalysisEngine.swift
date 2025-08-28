@@ -20,7 +20,11 @@ struct AnalysisEngine {
         var croppedBodyImage: CGImage
         var croppedFaceImage: CGImage?
         var finalImage: CGImage?
-        // print("Initial orientation: \(image.imageOrientation)") // debug
+
+        #if DEBUG
+        print("Initial orientation: \(image.imageOrientation)") // debug
+        #endif
+
         let orientedImage = image.normalized()
         guard let cgImage = orientedImage.cgImage else { // convert UIImage to CGImage for analysis
             analysisResult.feedbackMessage = AnalysisError.imageConversionFailed.localizedDescription
@@ -30,8 +34,10 @@ struct AnalysisEngine {
         if isWorn {
             do {
                 bodyBox = try await self.detectBody(in: cgImage)
-                // print("Bounding box detected: \(bodyBox)")
+                #if DEBUG
+                print("Bounding box detected: \(bodyBox)")
                 // analysisResult.feedbackMessage = "Human detected!"
+                #endif
             } catch let error as AnalysisError {
                 analysisResult.feedbackMessage = error.localizedDescription
                 return analysisResult
@@ -41,24 +47,31 @@ struct AnalysisEngine {
             }
             do {
                 croppedBodyImage = try self.cropBody(in: cgImage, to: bodyBox)
-                //let debugImage = UIImage(cgImage: croppedBodyImage)
-                //analysisResult.debugImage = debugImage
+                #if DEBUG
+                // for visualizing the body crop during debug:
+                // let debugImage = UIImage(cgImage: croppedBodyImage)
+                // analysisResult.debugImage = debugImage
+                #endif
             } catch {
                 analysisResult.feedbackMessage = error.localizedDescription
                 return analysisResult
             }
             do {
-                if let faceBox = try await self.detectFace(in: croppedBodyImage){ // run face detection on body cropped image
-                    // print("Face bounding box detected: \(faceBox)")
+                if let faceBox = try await self.detectFace(in: croppedBodyImage) { // run face detection on body cropped image
+                    #if DEBUG
+                    print("Face bounding box detected: \(faceBox)")
+                    #endif
                     croppedFaceImage = try self.cropFace(faceBox, outOf: croppedBodyImage) // run face/head crop
-                    //analysisResult.debugImage = UIImage(cgImage: croppedFaceImage)
+                    #if DEBUG
+                    // analysisResult.debugImage = UIImage(cgImage: croppedFaceImage)
+                    #endif
                 }
             } catch {
                 analysisResult.feedbackMessage = error.localizedDescription
                 return analysisResult
             }
-            if let cropped = croppedFaceImage{ // if face was cropped off (unwrap optional)
-                analysisResult.pixelBuffer = self.getPixelData(from: cropped)// run data extraction on face cropped image
+            if let cropped = croppedFaceImage { // if face was cropped off (unwrap optional)
+                analysisResult.pixelBuffer = self.getPixelData(from: cropped) // run data extraction on face cropped image
                 finalImage = cropped
             } else {
                 analysisResult.pixelBuffer = self.getPixelData(from: croppedBodyImage) // no face detected, run data extraction on original body crop
@@ -68,41 +81,54 @@ struct AnalysisEngine {
             analysisResult.pixelBuffer = self.getPixelData(from: cgImage)
             finalImage = cgImage
         }
+
+        #if DEBUG
         var hsvArray: [Int] = [] // array for saturation/value testing
+        #endif
+
         if let buffer = analysisResult.pixelBuffer { // unwrap pixel buffer into local assignment
+            #if DEBUG
             // print("Original image buffer:", Array(buffer[0..<400])) // testing
-            
-            for i in stride(from: 0, to: buffer.count, by: 4){
+            #endif
+
+            for i in stride(from: 0, to: buffer.count, by: 4) {
                 let r = buffer[i]
                 let g = buffer[i+1]
                 let b = buffer[i+2]
-                
-                var hsv = convertRGBtoHSV(r,g,b) // 3 element tuple of a single pixel's hsv values
+
+                var hsv = convertRGBtoHSV(r, g, b) // 3 element tuple of a single pixel's hsv values
                 assignToBucket(pixel: &hsv, buckets: &buckets, testingArray: &darkBlueArray)
-                
+
+                #if DEBUG
                 hsvArray.append(hsv.0)
                 hsvArray.append(hsv.1)
                 hsvArray.append(hsv.2)
-                
+                #endif
             }
+
             // calculate percentage of total image for each bucket
             let totalPixels = buffer.count / 4
             for i in buckets.indices {
                 buckets[i].percentage = Double(buckets[i].count) / Double(totalPixels) * 100.0
             }
-            
+
             // sort bucket array smallest - largest
             buckets.sort(by: { $0.count < $1.count } )
             var hueArray: [UInt16] = []
+            var valueArray: [UInt16] = []
             for i in 0..<buckets.count {
                 for pixel in buckets[i].pixels {
                     hueArray.append(UInt16(pixel.0))
+                    valueArray.append(UInt16(pixel.2))
                 }
                 let (hueStdDev, meanHue) = calculateStdDevAndMean(of: hueArray)
                 buckets[i].hueStdDev = hueStdDev
                 buckets[i].meanHue = meanHue
+                let (valueStdDev, meanValue) = calculateStdDevAndMean(of: valueArray)
+                buckets[i].valueStdDev = valueStdDev
+                buckets[i].meanValue = meanValue
             }
-            
+            combineAdjacentBuckets(in: &buckets)
             determineHarmony(from: &buckets, storeIn: &analysisResult)
             if let isMatch = analysisResult.isMatch {
                 if isMatch {
@@ -111,24 +137,27 @@ struct AnalysisEngine {
                     analysisResult.feedbackMessage = "You don't match."
                 }
             }
-            print("Buckets after trimming:", buckets)
+
+            #if DEBUG
+            print("Buckets after trimming:\n", buckets)
             print("Bucket count: \(buckets.count)")
-            
+            #endif
+
+            #if DEBUG
             // testing hsv to rgb conversion to confirm accuracy in image
-            
             var testingRGBAarray: [UInt8] = []
-            for i in stride(from: 0, to: hsvArray.count, by: 3){
+            for i in stride(from: 0, to: hsvArray.count, by: 3) {
                 let h = hsvArray[i]
                 let s = hsvArray[i+1]
                 let v = hsvArray[i+2]
-                
-                let rgba = convertHSVtoRGBA(h,s,v)
+
+                let rgba = convertHSVtoRGBA(h, s, v)
                 testingRGBAarray.append(rgba.0)
                 testingRGBAarray.append(rgba.1)
                 testingRGBAarray.append(rgba.2)
                 testingRGBAarray.append(rgba.3)
             }
-            
+
             // showing difference between new and original rgba values for debugging
             var diffArray: [Int] = []
             for i in 0..<min(buffer.count, testingRGBAarray.count) {
@@ -137,21 +166,21 @@ struct AnalysisEngine {
                 let diff = reconstructed - original
                 diffArray.append(diff)
             }
-            
             // print(Array(diffArray[0..<1000]))
+
             // create and store altered image in analysisResult for debugging (blackout/color testing)
-            if let finalImage = finalImage { // unwrap
-                if let testImage = createImage(from: testingRGBAarray, width: finalImage.width, height: finalImage.height){
+            if let finalImage = finalImage {
+                if let testImage = createImage(from: testingRGBAarray, width: finalImage.width, height: finalImage.height) {
                     // analysisResult.debugImage = UIImage(cgImage: testImage)
                 }
             }
-            
+            #endif
         }
-        
-        
+
         return analysisResult
     }
-    
+
+
     /*
      * detectBody
      *
@@ -455,26 +484,29 @@ struct AnalysisEngine {
     private func assignToBucket(pixel: inout (h: Int, s: Int, v: Int), buckets: inout [ColorBucket], testingArray: inout [(Int, Int, Int)]){
         let label = getBucketLabel(from: pixel.h, and: pixel.s, and: pixel.v)
         let shade = getShadeLevel(from: pixel.v)
+        #if DEBUG
         // debugging array
         if label == (8, "Blue") && shade == .dark {
             testingArray.append((pixel.h, pixel.s, pixel.v))
         }
+        #endif
         // this ensures there is only 1 neutral bucket
         if label == (0, "Neutral") || shade == .neutral {
-            pixel.v = 0
+           // pixel.v = 0
             if let i = buckets.firstIndex(where: { $0.label == (0, "Neutral") || $0.shade == .neutral } ) {
                 buckets[i].count += 1
+                buckets[i].pixels.append( (pixel.h, pixel.s, pixel.v) )
             } else {
-                buckets.append(ColorBucket(label: (0, "Neutral"), shade: .neutral, count: 1))
+                buckets.append( ColorBucket(label: (0, "Neutral"), shade: .neutral, count: 1, pixels: [(pixel.h, pixel.s, pixel.v)]) )
             }
             return
         }
         // bucket assignment/creation for non-neutrals
         if let i = buckets.firstIndex(where: {$0.label == label && $0.shade == shade} ) {
             buckets[i].count += 1
-            buckets[i].pixels.append((pixel.h, pixel.s, pixel.v))
+            buckets[i].pixels.append( (pixel.h, pixel.s, pixel.v) )
         } else {
-            buckets.append(ColorBucket(label: label, shade: shade, count: 1, pixels: [(pixel.h, pixel.s, pixel.v)]))
+            buckets.append( ColorBucket(label: label, shade: shade, count: 1, pixels: [(pixel.h, pixel.s, pixel.v)]) )
         }
         // pixel edits for debugging/troubleshooting
         if label.1 == "Orange" && shade == .light {
@@ -534,12 +566,15 @@ struct AnalysisEngine {
         for i in 0..<buckets.count {
             if buckets[i].label.1 == "Neutral"{
                 buckets.remove(at: i)
+                return
             }
         }
     }
     
     private func twoBucketAnalysis(on buckets: [ColorBucket]) -> Bool {
+        #if DEBUG
         print("Running 2 bucket...")
+        #endif
         let bucket1 = buckets[0]
         let bucket2 = buckets[1]
         
@@ -562,14 +597,14 @@ struct AnalysisEngine {
         let value1max = v1array.max()!
         let value1min = v1array.min()!
         let (value1StdDev, value1Mean) = calculateStdDevAndMean(of: v1array)
-        
+        #if DEBUG
         print("BUCKET 1")
         print("\t    Hue:\tSaturation:\tValue:")
         print("Max:     \(h1max)\t\t\(sat1max)\t\t\t\(value1max)")
         print("Min:     \(h1min)\t\t\(sat1min)\t\t\t\(value1min)")
         print("StdDev: \(String(format: "%.2f", hue1StdDev))\t\t\(String(format: "%.2f", sat1StdDev))\t\t\(String(format: "%.2f", value1StdDev))")
         print("Mean: \(String(format: "%.2f", hue1Mean))\t\t\(String(format: "%.2f", sat1Mean))\t\t\(String(format: "%.2f", value1Mean))")
-        
+        #endif
         var h2array: [UInt16] = []
         var s2array: [UInt16] = []
         var v2array: [UInt16] = []
@@ -589,14 +624,14 @@ struct AnalysisEngine {
         let value2max = v2array.max()!
         let value2min = v2array.min()!
         let (value2StdDev, value2Mean) = calculateStdDevAndMean(of: v2array)
-        
+        #if DEBUG
         print("BUCKET 2")
         print("\t    Hue:\tSaturation:\tValue:")
         print("Max:     \(h2max)\t\t\(sat2max)\t\t\t\(value2max)")
         print("Min:     \(h2min)\t\t\(sat2min)\t\t\t\(value2min)")
         print("StdDev: \(String(format: "%.2f", hue2StdDev))\t\t\(String(format: "%.2f", sat2StdDev))\t\t\(String(format: "%.2f", value2StdDev))")
         print("Mean: \(String(format: "%.2f", hue2Mean))\t\t\(String(format: "%.2f", sat2Mean))\t\t\(String(format: "%.2f", value2Mean))")
-        
+        #endif
         if isComplementary(hue1Mean, hue2Mean) || isAnalogous(hue1Mean, hue2Mean) {
             return true
         } else {
@@ -605,7 +640,9 @@ struct AnalysisEngine {
     }
     
     private func threeBucketAnalysis(on buckets: [ColorBucket]) -> Bool {
+        #if DEBUG
         print("Running 3 bucket...")
+        #endif
         let bucket1 = buckets[0]
         let bucket2 = buckets[1]
         let bucket3 = buckets[2]
@@ -629,14 +666,14 @@ struct AnalysisEngine {
         let value1max = v1array.max()!
         let value1min = v1array.min()!
         let (value1StdDev, value1Mean) = calculateStdDevAndMean(of: v1array)
-        
+        #if DEBUG
         print("BUCKET 1")
         print("\t    Hue:\tSaturation:\tValue:")
         print("Max:     \(h1max)\t\t\(sat1max)\t\t\t\(value1max)")
         print("Min:     \(h1min)\t\t\(sat1min)\t\t\t\(value1min)")
         print("StdDev: \(String(format: "%.2f", hue1StdDev))\t\t\(String(format: "%.2f", sat1StdDev))\t\t\(String(format: "%.2f", value1StdDev))")
         print("Mean: \(String(format: "%.2f", hue1Mean))\t\t\(String(format: "%.2f", sat1Mean))\t\t\(String(format: "%.2f", value1Mean))")
-        
+        #endif
         var h2array: [UInt16] = []
         var s2array: [UInt16] = []
         var v2array: [UInt16] = []
@@ -656,14 +693,14 @@ struct AnalysisEngine {
         let value2max = v2array.max()!
         let value2min = v2array.min()!
         let (value2StdDev, value2Mean) = calculateStdDevAndMean(of: v2array)
-        
+        #if DEBUG
         print("BUCKET 2")
         print("\t    Hue:\tSaturation:\tValue:")
         print("Max:     \(h2max)\t\t\(sat2max)\t\t\t\(value2max)")
         print("Min:     \(h2min)\t\t\(sat2min)\t\t\t\(value2min)")
         print("StdDev: \(String(format: "%.2f", hue2StdDev))\t\t\(String(format: "%.2f", sat2StdDev))\t\t\(String(format: "%.2f", value2StdDev))")
         print("Mean: \(String(format: "%.2f", hue2Mean))\t\t\(String(format: "%.2f", sat2Mean))\t\t\(String(format: "%.2f", value2Mean))")
-        
+        #endif
         var h3array: [UInt16] = []
         var s3array: [UInt16] = []
         var v3array: [UInt16] = []
@@ -684,14 +721,14 @@ struct AnalysisEngine {
         let value3max = v3array.max()!
         let value3min = v3array.min()!
         let (value3StdDev, value3Mean) = calculateStdDevAndMean(of: v3array)
-        
+        #if DEBUG
         print("BUCKET 3")
         print("\t    Hue:\tSaturation:\tValue:")
         print("Max:     \(h3max)\t\t\(sat3max)\t\t\t\(value3max)")
         print("Min:     \(h3min)\t\t\(sat3min)\t\t\t\(value3min)")
         print("StdDev: \(String(format: "%.2f", hue3StdDev))\t\t\(String(format: "%.2f", sat3StdDev))\t\t\(String(format: "%.2f", value3StdDev))")
         print("Mean: \(String(format: "%.2f", hue3Mean))\t\t\(String(format: "%.2f", sat3Mean))\t\t\(String(format: "%.2f", value3Mean))")
-        
+        #endif
         if isAnalogous(hue1Mean, hue2Mean, hue3Mean) || isTriadic(hue1Mean, hue2Mean, hue3Mean) || isSplitComplementary(hue1Mean, hue2Mean, hue3Mean) {
             return true
         } else {
@@ -794,7 +831,7 @@ struct AnalysisEngine {
         return false
     }
 
-    private func combineAdjacentBuckets(_ buckets: inout [ColorBucket]) {
+    private func combineAdjacentBuckets(in buckets: inout [ColorBucket]) {
         var potentialAdjacentHues: Bool = true
         while potentialAdjacentHues {
             for i in 0..<buckets.count {

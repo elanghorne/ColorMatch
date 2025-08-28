@@ -79,7 +79,7 @@ struct ColorBucket: CustomStringConvertible {
     var pixels: [(h: Int, s: Int, v: Int)] = []
     
     var description: String {
-        return "Label: \(label), Shade: \(shade), Count: \(count), Percentage: \(String(format: "%.2f", percentage))%, Mean Hue: \(meanHue), Hue StdDev: \(String(format: "%.2f", hueStdDev))"
+        return "Label: \(label)\nShade: \(shade)\nCount: \(count)\nPercentage: \(String(format: "%.2f", percentage))%\nMean Hue: \(meanHue)\nHue StdDev: \(String(format: "%.2f", hueStdDev))\nMean Value: \(meanValue)\nValue StdDev: \(String(format: "%.2f", valueStdDev))\nFirst 25 pixels: \(Array(pixels[0..<25]))\n"
     }
     init(label: (Int, String), shade: ShadeLevel, count: Int) {
         self.label = label

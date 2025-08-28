@@ -116,17 +116,17 @@ struct HomeView: View {
                             print("Info button pressed")
                             
                         }) {
-                            Image(systemName: "info.circle")
+                            Image(systemName: "info.circle.fill")
                                 .font(.system(size: 25))
-                            //.foregroundColor(Color.white)
+                                .tint(.white)
                         }
                         Spacer()
                         Button(action: {
                             print("Settings button pressed")
                         }) {
-                            Image(systemName: "gearshape")
+                            Image(systemName: "gearshape.fill")
                                 .font(.system(size: 25))
-                            //.foregroundColor(Color.white)
+                                .tint(.white)
                         }
                     }
                 }
