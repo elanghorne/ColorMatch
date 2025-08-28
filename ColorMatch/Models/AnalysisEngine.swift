@@ -36,7 +36,7 @@ struct AnalysisEngine {
                 bodyBox = try await self.detectBody(in: cgImage)
                 #if DEBUG
                 print("Bounding box detected: \(bodyBox)")
-                // analysisResult.feedbackMessage = "Human detected!"
+                analysisResult.feedbackMessage = "Human detected!"
                 #endif
             } catch let error as AnalysisError {
                 analysisResult.feedbackMessage = error.localizedDescription
