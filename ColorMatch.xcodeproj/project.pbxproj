@@ -14,6 +14,9 @@
 		800BAE402E0A1481006F1D22 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800BAE362E0A1481006F1D22 /* CameraView.swift */; };
 		800BAE412E0A1481006F1D22 /* ColorMatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800BAE3A2E0A1481006F1D22 /* ColorMatchApp.swift */; };
 		800BAE422E0A1481006F1D22 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 800BAE392E0A1481006F1D22 /* Assets.xcassets */; };
+		80407BF82F7D7DCC00B56852 /* AppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80407BF72F7D7DC500B56852 /* AppearanceSettings.swift */; };
+		80407BFA2F7D7E7E00B56852 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80407BF92F7D7E7E00B56852 /* SettingsView.swift */; };
+		80407BFC2F7D7E9900B56852 /* RotationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80407BFB2F7D7E9900B56852 /* RotationExtension.swift */; };
 		8084C0712E147FE900A8EB4E /* AnalysisEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8084C0702E147FE900A8EB4E /* AnalysisEngine.swift */; };
 		8084C0732E159C0F00A8EB4E /* AnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8084C0722E159C0F00A8EB4E /* AnalysisViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -27,6 +30,9 @@
 		800BAE372E0A1481006F1D22 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		800BAE392E0A1481006F1D22 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		800BAE3A2E0A1481006F1D22 /* ColorMatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMatchApp.swift; sourceTree = "<group>"; };
+		80407BF72F7D7DC500B56852 /* AppearanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettings.swift; sourceTree = "<group>"; };
+		80407BF92F7D7E7E00B56852 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		80407BFB2F7D7E9900B56852 /* RotationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotationExtension.swift; sourceTree = "<group>"; };
 		8084C0702E147FE900A8EB4E /* AnalysisEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisEngine.swift; sourceTree = "<group>"; };
 		8084C0722E159C0F00A8EB4E /* AnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -61,6 +67,8 @@
 		800BAE332E0A1481006F1D22 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				80407BF72F7D7DC500B56852 /* AppearanceSettings.swift */,
+				80407BFB2F7D7E9900B56852 /* RotationExtension.swift */,
 				800BAE322E0A1481006F1D22 /* AnalysisModel.swift */,
 				8084C0702E147FE900A8EB4E /* AnalysisEngine.swift */,
 			);
@@ -73,6 +81,7 @@
 				800BAE342E0A1481006F1D22 /* AnalysisView.swift */,
 				800BAE362E0A1481006F1D22 /* CameraView.swift */,
 				800BAE352E0A1481006F1D22 /* AppColor.swift */,
+				80407BF92F7D7E7E00B56852 /* SettingsView.swift */,
 				800BAE372E0A1481006F1D22 /* HomeView.swift */,
 			);
 			path = Views;
@@ -170,6 +179,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80407BF82F7D7DCC00B56852 /* AppearanceSettings.swift in Sources */,
 				8084C0712E147FE900A8EB4E /* AnalysisEngine.swift in Sources */,
 				800BAE3C2E0A1481006F1D22 /* AppColor.swift in Sources */,
 				8084C0732E159C0F00A8EB4E /* AnalysisViewModel.swift in Sources */,
@@ -178,6 +188,8 @@
 				800BAE3F2E0A1481006F1D22 /* HomeView.swift in Sources */,
 				800BAE402E0A1481006F1D22 /* CameraView.swift in Sources */,
 				800BAE412E0A1481006F1D22 /* ColorMatchApp.swift in Sources */,
+				80407BFC2F7D7E9900B56852 /* RotationExtension.swift in Sources */,
+				80407BFA2F7D7E7E00B56852 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,6 +325,8 @@
 				DEVELOPMENT_TEAM = 7U7LS66GFY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ColorMatch;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera for photo analysis.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photos for photo analysis.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -344,6 +358,8 @@
 				DEVELOPMENT_TEAM = 7U7LS66GFY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ColorMatch;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera for photo analysis.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photos for photo analysis.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

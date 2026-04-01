@@ -7,12 +7,19 @@
 
 import SwiftUI
 
+// Note: The main settings UI lives in SettingsPanel inside HomeView.swift,
+// presented as a bottom sheet. This file is kept as a placeholder for
+// future full-screen settings if needed.
+
 struct SettingsView: View {
+    @EnvironmentObject var appearance: AppearanceSettings
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        SettingsPanel()
     }
 }
 
 #Preview {
     SettingsView()
+        .environmentObject(AppearanceSettings())
 }
