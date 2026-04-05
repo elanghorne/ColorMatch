@@ -32,7 +32,7 @@ enum AnalysisError: LocalizedError {
         case .noHumanFound:
             return "No human found in image. Please try again."
         case .multipleHumansFound:
-            return "Multiple humans found in image. Please try again with only 1 person."
+            return "Please try again with only 1 person shown."
         case .imageConversionFailed:
             return "Failed to convert image to CGImage."
         case .unknown:

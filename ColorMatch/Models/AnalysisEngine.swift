@@ -129,7 +129,7 @@ struct AnalysisEngine {
                 buckets[i].meanValue = meanValue
             }
             combineAdjacentBuckets(in: &buckets)
-            determineHarmony(from: &buckets, storeIn: &analysisResult)
+            determineHarmony(from: &buckets, storeResultsIn: &analysisResult)
             if let isMatch = analysisResult.isMatch {
                 if isMatch {
                     analysisResult.feedbackMessage = "You match!"
@@ -526,7 +526,7 @@ struct AnalysisEngine {
     }
     
     
-    private func determineHarmony(from buckets: inout [ColorBucket], storeIn analysisResult: inout OutfitAnalysisResult) {
+    private func determineHarmony(from buckets: inout [ColorBucket], storeResultsIn analysisResult: inout OutfitAnalysisResult) {
         // remove low percentage buckets (noise)
         for i in stride(from: buckets.count - 1, through: 0, by: -1) {
             if buckets[i].percentage <= 5 {
