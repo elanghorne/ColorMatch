@@ -22,7 +22,7 @@ struct AnalysisView: View {
             AppColor.background(dark).ignoresSafeArea()
 
             // Ambient glow (colour-shifts based on result)
-            if viewModel.analysisComplete, let result = viewModel.analysisResult {
+            if viewModel.analysisComplete, let result = viewModel.analysisData {
                 RadialGradient(
                     colors: [
                         (result.isMatch == true ? AppColor.accentGlow : AppColor.noMatch.opacity(0.25)),
@@ -55,7 +55,7 @@ struct AnalysisView: View {
                         .padding(.vertical, 12)
                         .background(AppColor.surfaceHigh(dark))
                         .clipShape(Capsule())
-                    } else if let result = viewModel.analysisResult {
+                    } else if let result = viewModel.analysisData {
                         let matched = result.isMatch == true
                         HStack(spacing: 8) {
                             Image(systemName: matched ? "checkmark.circle.fill" : "xmark.circle.fill")
@@ -100,7 +100,7 @@ struct AnalysisView: View {
                             )
                             .shadow(color: Color.black.opacity(dark ? 0.5 : 0.15), radius: 20, x: 0, y: 10)
 
-                        if let debugImage = viewModel.analysisResult?.debugImage {
+                        if let debugImage = viewModel.analysisData?.debugImage {
                             Image(uiImage: debugImage)
                                 .resizable()
                                 .scaledToFit()
