@@ -18,10 +18,11 @@
 		80407BFA2F7D7E7E00B56852 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80407BF92F7D7E7E00B56852 /* SettingsView.swift */; };
 		80407BFC2F7D7E9900B56852 /* RotationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80407BFB2F7D7E9900B56852 /* RotationExtension.swift */; };
 		80407BFE2F82B6E900B56852 /* ImagePreprocessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80407BFD2F82B6DD00B56852 /* ImagePreprocessor.swift */; };
-		80407C002F82B6FE00B56852 /* ColorProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80407BFF2F82B6F800B56852 /* ColorProcessor.swift */; };
 		80407C022F82B72100B56852 /* HarmonyAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80407C012F82B70200B56852 /* HarmonyAnalyzer.swift */; };
 		8084C0712E147FE900A8EB4E /* AnalysisEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8084C0702E147FE900A8EB4E /* AnalysisEngine.swift */; };
 		8084C0732E159C0F00A8EB4E /* AnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8084C0722E159C0F00A8EB4E /* AnalysisViewModel.swift */; };
+		80C6B5E22F82EC2C002E8201 /* AnalysisError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C6B5E12F82EC2C002E8201 /* AnalysisError.swift */; };
+		80C6B5E42F82EC59002E8201 /* CleanedImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C6B5E32F82EC59002E8201 /* CleanedImageProcessor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,10 +38,11 @@
 		80407BF92F7D7E7E00B56852 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		80407BFB2F7D7E9900B56852 /* RotationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotationExtension.swift; sourceTree = "<group>"; };
 		80407BFD2F82B6DD00B56852 /* ImagePreprocessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreprocessor.swift; sourceTree = "<group>"; };
-		80407BFF2F82B6F800B56852 /* ColorProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorProcessor.swift; sourceTree = "<group>"; };
 		80407C012F82B70200B56852 /* HarmonyAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarmonyAnalyzer.swift; sourceTree = "<group>"; };
 		8084C0702E147FE900A8EB4E /* AnalysisEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisEngine.swift; sourceTree = "<group>"; };
 		8084C0722E159C0F00A8EB4E /* AnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisViewModel.swift; sourceTree = "<group>"; };
+		80C6B5E12F82EC2C002E8201 /* AnalysisError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisError.swift; sourceTree = "<group>"; };
+		80C6B5E32F82EC59002E8201 /* CleanedImageProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanedImageProcessor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +76,8 @@
 			isa = PBXGroup;
 			children = (
 				80407C012F82B70200B56852 /* HarmonyAnalyzer.swift */,
-				80407BFF2F82B6F800B56852 /* ColorProcessor.swift */,
+				80C6B5E32F82EC59002E8201 /* CleanedImageProcessor.swift */,
+				80C6B5E12F82EC2C002E8201 /* AnalysisError.swift */,
 				80407BFD2F82B6DD00B56852 /* ImagePreprocessor.swift */,
 				80407BF72F7D7DC500B56852 /* AppearanceSettings.swift */,
 				80407BFB2F7D7E9900B56852 /* RotationExtension.swift */,
@@ -146,7 +149,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 1630;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					800BAE022E00A761006F1D22 = {
 						CreatedOnToolsVersion = 16.3;
@@ -189,13 +192,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				80407BF82F7D7DCC00B56852 /* AppearanceSettings.swift in Sources */,
-				80407C002F82B6FE00B56852 /* ColorProcessor.swift in Sources */,
 				8084C0712E147FE900A8EB4E /* AnalysisEngine.swift in Sources */,
 				800BAE3C2E0A1481006F1D22 /* AppColor.swift in Sources */,
 				80407C022F82B72100B56852 /* HarmonyAnalyzer.swift in Sources */,
+				80C6B5E42F82EC59002E8201 /* CleanedImageProcessor.swift in Sources */,
 				8084C0732E159C0F00A8EB4E /* AnalysisViewModel.swift in Sources */,
 				800BAE3D2E0A1481006F1D22 /* AnalysisView.swift in Sources */,
 				800BAE3E2E0A1481006F1D22 /* AnalysisModel.swift in Sources */,
+				80C6B5E22F82EC2C002E8201 /* AnalysisError.swift in Sources */,
 				800BAE3F2E0A1481006F1D22 /* HomeView.swift in Sources */,
 				800BAE402E0A1481006F1D22 /* CameraView.swift in Sources */,
 				80407BFE2F82B6E900B56852 /* ImagePreprocessor.swift in Sources */,
@@ -243,6 +247,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 7U7LS66GFY;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -266,6 +271,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -306,6 +312,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 7U7LS66GFY;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -322,6 +329,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -334,7 +342,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7U7LS66GFY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ColorMatch;
@@ -344,6 +351,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -366,7 +374,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7U7LS66GFY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ColorMatch;
@@ -376,6 +383,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

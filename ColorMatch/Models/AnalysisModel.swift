@@ -9,7 +9,7 @@ import SwiftUI
 
 struct OutfitAnalysisData{
     var feedbackMessage = ""
-    var isMatch: Bool? = nil
+    var isMatch: Bool = false
     var confidence: Int = 0 // 0-100
     var debugImage: UIImage?
 }

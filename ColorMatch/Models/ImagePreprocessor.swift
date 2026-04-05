@@ -5,6 +5,7 @@
 //  Created by Eric Langhorne on 4/5/26.
 //
 
+import Foundation
 import SwiftUI
 import Vision
 

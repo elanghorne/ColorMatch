@@ -184,7 +184,7 @@ func processCleanedBuffer(_ buffer: [UInt8], _ buckets: inout [ColorBucket]) {
 
         let hsv = convertPixelToHSV(r, g, b)
         assignToBucket(pixel: hsv, buckets: &buckets)
-        getBucketStats(&buckets, buffer.count / 4)
-        combineAdjacentBuckets(in: &buckets)
     }
+    getBucketStats(&buckets, buffer.count / 4)
+    combineAdjacentBuckets(in: &buckets)
 }
