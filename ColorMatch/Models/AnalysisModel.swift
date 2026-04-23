@@ -12,7 +12,6 @@ import PhotosUI
 struct OutfitAnalysisResult{
     var feedbackMessage = "Analyzed!"
     var isMatch: Bool? = nil
-    var confidence: Int = 0 // 0-100
     var debugImage: UIImage? = nil //testing
     var pixelBuffer: [UInt8]? = nil
 }
@@ -26,7 +25,7 @@ enum AnalysisError: LocalizedError {
     case bodyDetectionRequest
     case failedCrop
     case faceDetectionRequest
-    
+
     var errorDescription: String? {
         switch self {
         case .noHumanFound:
@@ -52,7 +51,7 @@ enum ShadeLevel {
     case medium
     case dark
     case neutral
-    
+
     var value: Int {
         switch self {
         case .light:
@@ -73,23 +72,18 @@ struct ColorBucket: CustomStringConvertible {
     var count: Int
     var percentage: Double = 0.0
     var meanHue: Int = 0
-    var hueStdDev: Double = 0.0
     var meanValue: Int = 0
-    var valueStdDev: Double = 0.0
-    var pixels: [(h: Int, s: Int, v: Int)] = []
-    
+    var hueSum: Int = 0
+    var valueSum: Int = 0
+
     var description: String {
-        return "Label: \(label)\nShade: \(shade)\nCount: \(count)\nPercentage: \(String(format: "%.2f", percentage))%\nMean Hue: \(meanHue)\nHue StdDev: \(String(format: "%.2f", hueStdDev))\nMean Value: \(meanValue)\nValue StdDev: \(String(format: "%.2f", valueStdDev))\nFirst 25 pixels: \(Array(pixels[0..<25]))\n"
+        return "Label: \(label)\nShade: \(shade)\nCount: \(count)\nPercentage: \(String(format: "%.2f", percentage))%\nMean Hue: \(meanHue)\nMean Value: \(meanValue)\n"
     }
-    init(label: (Int, String), shade: ShadeLevel, count: Int) {
+    init(label: (Int, String), shade: ShadeLevel, count: Int, hue: Int, value: Int) {
         self.label = label
         self.shade = shade
         self.count = count
-    }
-    init(label: (Int, String), shade: ShadeLevel, count: Int, pixels: [(h: Int, s: Int, v: Int)]) {
-        self.label = label
-        self.shade = shade
-        self.count = count
-        self.pixels = pixels
+        self.hueSum = hue
+        self.valueSum = value
     }
 }
