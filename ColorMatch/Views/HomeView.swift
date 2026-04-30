@@ -206,8 +206,6 @@ struct HomeView: View {
     @State private var selectedImage: UIImage?
     @State private var capturedImage: UIImage? = nil
     @State private(set) var isWorn: Bool   = true
-
-    @State private var appeared      = false
     @State private var showingInfo   = false
     @State private var showingSettings = false
 
@@ -254,9 +252,6 @@ struct HomeView: View {
                         .tracking(12)
                         .foregroundColor(AppColor.textPrimary(dark))
                         .padding(.top, 24)
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : -10)
-                        .animation(.easeOut(duration: 0.5), value: appeared)
 
                     Spacer()
 
@@ -270,8 +265,7 @@ struct HomeView: View {
                         ModePicker(isWorn: $isWorn, dark: dark)
                     }
                     .padding(.bottom, 36)
-                    .opacity(appeared ? 1 : 0)
-                    .animation(.easeOut(duration: 0.5).delay(0.1), value: appeared)
+
 
                     // ── Camera Button ─────────────────────────────────────
                     Button(action: {
@@ -320,9 +314,6 @@ struct HomeView: View {
                     .fullScreenCover(isPresented: $showingCamera) {
                         CameraView(image: $capturedImage).ignoresSafeArea()
                     }
-                    .opacity(appeared ? 1 : 0)
-                    .scaleEffect(appeared ? 1 : 0.88)
-                    .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.15), value: appeared)
 
                     Spacer()
 
@@ -352,8 +343,6 @@ struct HomeView: View {
                         handlePhotoPickerChange(newValue)
                     }
                     .padding(.bottom, 24)
-                    .opacity(appeared ? 1 : 0)
-                    .animation(.easeOut(duration: 0.4).delay(0.25), value: appeared)
 
                     // ── Bottom Bar ────────────────────────────────────────
                     HStack {
@@ -371,8 +360,6 @@ struct HomeView: View {
                     }
                     .padding(.horizontal, 28)
                     .padding(.bottom, 20)
-                    .opacity(appeared ? 1 : 0)
-                    .animation(.easeOut(duration: 0.4).delay(0.3), value: appeared)
                 }
             }
             .onChange(of: showingCamera) { _, newValue in
@@ -405,7 +392,6 @@ struct HomeView: View {
                     .presentationDragIndicator(.visible)
                     .presentationBackground(AppColor.surface(dark))
             }
-            .onAppear { appeared = true }
         }
     }
 }
